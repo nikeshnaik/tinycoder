@@ -32,12 +32,8 @@ class GPTDatasetV1(Dataset):
             print("freshly encoded and baked", len(token_ids))
 
             # Convert tokens to JSON format
-            tokens_json = json.dumps({"token_ids":token_ids})
+            tokens_json = json.dump({"token_ids":token_ids}, open(token_filename, "w"), indent=4)
 
-            # Save tokens to a file
-            with open(token_filename, 'w') as f:
-                f.write(tokens_json)
- 
 
         # Use a sliding window to chunk the book into overlapping sequences of max_length
         for i in range(0, len(token_ids) - max_length, stride):
@@ -383,21 +379,21 @@ def train_model(model, train_loader, val_loader, optimizer, device,
 
 # Generate all combinations of hyperparameters
 HPARAM_GRID = {
-    "batch_size": [8],
+    "batch_size": [128],
     "drop_rate": [0.15],
     "warmup_iters": [15],
     "weight_decay": [0.04],
-    "peak_lr": [0.001],
-    "initial_lr": [0.00003],
+    "peak_lr": [0.1],
+    "initial_lr": [0.03],
     "min_lr": [0.00005],
-    "n_epochs": [40],
+    "n_epochs": [10],
 }
 
 TINYCODER_CONFIG_sub100MB =  {"vocab_size": 50257,  # Vocabulary size
-                "ctx_len": 512,       # Context length -- shortened from original 1024 tokens
-                "emb_dim": 256,       # Embedding dimension
-                "n_heads": 4,        # Number of attention heads
-                "n_layers": 4,       # Number of layers
+                "ctx_len": 1024,       # Context length -- shortened from original 1024 tokens
+                "emb_dim": 240,       # Embedding dimension
+                "n_heads": 10,        # Number of attention heads
+                "n_layers": 10,       # Number of layers
                 "drop_rate": 0.15,
                 "qkv_bias": False,  
 }
@@ -443,7 +439,6 @@ if __name__ == "__main__":
     current_config = 0
     for combination in hyperparameter_combinations:
         current_config += 1
-        print(f"Evaluating configuration {current_config} of {total_combinations}")
 
         # Unpack the current combination of hyperparameters
         HPARAM_CONFIG = dict(zip(HPARAM_GRID.keys(), combination))
@@ -470,7 +465,7 @@ if __name__ == "__main__":
         model = GPTModel(TINYCODER_CONFIG_sub100MB)
         model.to(device)
 
-        print(" Model Total Parameters", sum(p.numel() for p in model.parameters()))
+        print(f"Model Total Parameters {sum(p.numel() for p in model.parameters())/ 1e6} millions")
 
         optimizer = torch.optim.AdamW(
             model.parameters(),
