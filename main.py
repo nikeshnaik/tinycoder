@@ -429,7 +429,7 @@ if __name__ == "__main__":
     best_hparams = {}
 
     
-    train_dataset = load_dataset("roneneldan/TinyStories", split="train")["text"][:200]
+    train_dataset = load_dataset("roneneldan/TinyStories", split="train")["text"]
     valid_dataset = load_dataset("roneneldan/TinyStories", split="validation")["text"]
 
     train_dataset = " ".join(train_dataset)
