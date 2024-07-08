@@ -6,7 +6,10 @@ and lastly this is a self-learning project, once trained lots of post-training m
 
 
 
-- [ ] Get dataset from tinystories
-- [ ] replicate tiny stories model by following the paper.
+- [X] Get dataset from tinystories
+- [X] replicate tiny stories model config by following the paper.
+- [X] dry test for 10 epochs
+- [X] add wanddb to log
+- [ ] start training for 8hours
 - [ ] experiment LSTM, RNN layers to reduce size.
 - [ ] if done try to do same with coding dataset.
